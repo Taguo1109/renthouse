@@ -39,7 +39,7 @@ jobs:
       - name: Build project
         run: yarn build # Assuming 'build' script in package.json builds to 'dist' folder
         env: 
-          VITE_BASE_URL: /renthouse/ # Make sure base is set for build
+          VITE_BASE_URL: / # Make sure base is set for build
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

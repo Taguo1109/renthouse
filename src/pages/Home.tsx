@@ -86,32 +86,6 @@ const Home = () => {
         <title>{`${siteName} - 找到你的理想住所 | 全台優質租屋網`}</title>
         <meta name='description' content={siteDescription} />
         <meta name='keywords' content={keywords} />
-        <meta property='og:type' content='website' />
-        <meta
-          property='og:url'
-          content='https://taguo1109.github.io/renthouse/'
-        />
-        <meta property='og:title' content={`${siteName} - 找到你的理想住所`} />
-        <meta property='og:description' content={siteDescription} />
-        <meta
-          property='og:image'
-          content='https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=600'
-        />
-        <meta property='twitter:card' content='summary_large_image' />
-        <meta
-          property='twitter:url'
-          content='https://taguo1109.github.io/renthouse/'
-        />
-        <meta
-          property='twitter:title'
-          content={`${siteName} - 找到您的理想住所`}
-        />
-        <meta property='twitter:description' content={siteDescription} />
-        <meta
-          property='twitter:image'
-          content='https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=600'
-        />
-        <link rel='canonical' href='https://taguo1109.github.io/renthouse/' />
       </Helmet>
 
       <Box>
