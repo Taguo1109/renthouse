@@ -23,12 +23,6 @@ interface UserProfileDto {
   role: string;
 }
 
-interface JsonResult<T> {
-  state: string;
-  message: string;
-  data: T;
-}
-
 const Profile = () => {
   const [profile, setProfile] = useState<UserProfileDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,10 +32,10 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         // 後端用 Session Cookie 判斷身分
-        const res = await api.get<JsonResult<UserProfileDto>>('/api/user/me', {
+        const res = await api.get<UserProfileDto>('/api/user/me', {
           withCredentials: true,
         });
-        setProfile(res.data.data);
+        setProfile(res.data);
       } catch (err) {
         const e = err as AxiosError;
         if (e.response?.status === 401) {

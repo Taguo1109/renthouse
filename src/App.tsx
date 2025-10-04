@@ -7,7 +7,6 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Profile from './components/Profile';
-import AuthSuccess from './components/AuthSuccess';
 
 function App() {
   return (
@@ -23,7 +22,6 @@ function App() {
               <Route path='/' element={<Home />} />
               {/* 其他路由將在這裡添加 */}
               <Route path='/profile' element={<Profile />} />
-              <Route path='/auth/success' element={<AuthSuccess />} />
             </Routes>
           </Box>
           <Footer />
