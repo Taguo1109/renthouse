@@ -7,38 +7,36 @@ import {
   Box,
   CircularProgress,
   Alert,
-  Avatar,
-  Divider,
-  Stack,
 } from '@mui/material';
 import api from '../utils/axiosInstance';
 
-// 後端回傳的 DTO（對應 /api/user/me）
-interface UserProfileDto {
-  userId: string; // UUID
-  name: string | null;
-  email: string | null;
-  pictureUrl: string | null;
-  locale: string | null;
+// 這邊改成對應你的 data 內容
+interface UserProfile {
+  id: number;
+  email: string;
+  username: string;
   role: string;
 }
 
 const Profile = () => {
-  const [profile, setProfile] = useState<UserProfileDto | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        // 後端用 Session Cookie 判斷身分
-        const res = await api.get<UserProfileDto>('/api/user/me', {
-          withCredentials: true,
-        });
-        setProfile(res.data);
+        const res = await api.get('/user/profile'); // 不用手動加 token，會自動附上 Bearer access_token
+
+        if (res.data.status_code === '0000') {
+          setProfile(res.data.data); // 取出 data 欄位
+        } else {
+          setError('取得會員資料失敗：' + res.data.msg_detail);
+        }
       } catch (err) {
-        const e = err as AxiosError;
-        if (e.response?.status === 401) {
+        const error = err as AxiosError;
+        console.error('取得會員資料失敗', error.response?.status, error.message);
+        if (error.response?.status === 401) {
           setError('請先登入才能查看會員資料');
         } else {
           setError('無法取得會員資料');
@@ -69,41 +67,27 @@ const Profile = () => {
     );
   }
 
-  if (!profile) return null;
-
   return (
     <Container maxWidth='sm'>
       <Paper elevation={3} sx={{ mt: 5, p: 4, borderRadius: 2 }}>
-        <Stack direction='row' spacing={2} alignItems='center' mb={2}>
-          <Avatar
-            src={profile.pictureUrl ?? undefined}
-            alt={profile.name ?? profile.email ?? 'user'}
-            sx={{ width: 64, height: 64 }}
-          />
-          <Box>
-            <Typography variant='h5' color='primary.main'>
-              {profile.name || '未提供名稱'}
-            </Typography>
-          </Box>
-        </Stack>
-
-        <Divider sx={{ my: 2 }} />
-
-        <Typography variant='body1' sx={{ mb: 1 }}>
+        <Typography variant='h5' gutterBottom color='primary.main'>
+          會員資料
+        </Typography>
+        <Typography variant='body1'>
+          <strong>使用者名稱：</strong>
+          {profile?.username}
+        </Typography>
+        <Typography variant='body1'>
           <strong>Email：</strong>
-          {profile.email || '—'}
+          {profile?.email}
         </Typography>
-        <Typography variant='body1' sx={{ mb: 1 }}>
-          <strong>使用者 ID：</strong>
-          {profile.userId}
+        <Typography variant='body1'>
+          <strong>使用者ID：</strong>
+          {profile?.id}
         </Typography>
-        <Typography variant='body1' sx={{ mb: 1 }}>
-          <strong>語系：</strong>
-          {profile.locale || '—'}
-        </Typography>
-        <Typography variant='body1' sx={{ mb: 1 }}>
+        <Typography variant='body1'>
           <strong>角色：</strong>
-          {profile.role || '—'}
+          {profile?.role}
         </Typography>
       </Paper>
     </Container>
