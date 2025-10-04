@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? 'https://oauth.zeabur.app',
+  baseURL: import.meta.env.VITE_API_BASE_URL ?? 'https://oauth.taguo1109.com',
   withCredentials: true, // 帶上跨網域 Cookie
   headers: {
     'Content-Type': 'application/json',
