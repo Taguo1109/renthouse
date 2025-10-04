@@ -20,9 +20,10 @@ import { styled } from '@mui/material/styles';
 import { useEffect, useState } from 'react';
 import LogoutSuccessDialog from './dialog/LogoutSuccessDialog';
 import api from '../utils/axiosInstance';
-import { GOOGLE_LOGIN_URL } from '../config/auth';
+import LoginDialog from './dialog/LoginDialog';
 
 const Navbar = () => {
+  const [loginOpen, setLoginOpen] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
@@ -131,19 +132,19 @@ const Navbar = () => {
               <Button
                 startIcon={<LoginIcon />}
                 color='primary'
-                onClick={() => (window.location.href = GOOGLE_LOGIN_URL)}
+                onClick={() => setLoginOpen(true)}
               >
                 登入
               </Button>
             )}
 
+            {/* 登入 Dialog */}
+            <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
             <LogoutSuccessDialog
               open={logoutDialogOpen}
               onClose={() => {
                 setLogoutDialogOpen(false);
-                // 回首頁或刷新，二選一
                 window.location.href = import.meta.env.BASE_URL;
-                // 或者：window.location.reload();
               }}
             />
           </Box>
