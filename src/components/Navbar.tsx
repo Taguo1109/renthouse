@@ -1,3 +1,4 @@
+// components/Navbar.tsx
 import {
   AppBar,
   Toolbar,
@@ -12,35 +13,41 @@ import SearchIcon from '@mui/icons-material/Search';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import LoginIcon from '@mui/icons-material/Login';
-import { useState } from 'react';
-import LoginDialog from './dialog/LoginDialog';
 import LogoutIcon from '@mui/icons-material/Logout';
-import axios from 'axios';
-import LogoutSuccessDialog from './dialog/LogoutSuccessDialog';
 import Badge, { badgeClasses } from '@mui/material/Badge';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCartOutlined';
 import { styled } from '@mui/material/styles';
+import { useEffect, useState } from 'react';
+import LogoutSuccessDialog from './dialog/LogoutSuccessDialog';
+import api from '../utils/axiosInstance';
+import { GOOGLE_LOGIN_URL } from '../config/auth';
 
 const Navbar = () => {
-  const [loginOpen, setLoginOpen] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
-  const isLoggedIn = Boolean(localStorage.getItem('access_token'));
+
+  // 開頁用 session 檢查登入狀態
+  useEffect(() => {
+    (async () => {
+      try {
+        await api.get('/api/user/me', { withCredentials: true });
+        setIsLoggedIn(true);
+      } catch {
+        setIsLoggedIn(false);
+      } finally {
+        setAuthChecked(true);
+      }
+    })();
+  }, []);
 
   const handleLogout = async () => {
-    const accessToken = localStorage.getItem('access_token');
-    const refreshToken = localStorage.getItem('refresh_token');
-
     try {
-      await axios.post('https://go-auth-system.zeabur.app/logout', {
-        access_token: accessToken,
-        refresh_token: refreshToken,
-      });
-
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
+      await api.post('/auth/logout', {}, { withCredentials: true });
+      setIsLoggedIn(false);
       setLogoutDialogOpen(true);
-    } catch (error) {
-      console.error('登出失敗', error);
+    } catch (e) {
+      console.error('登出失敗', e);
     }
   };
 
@@ -50,6 +57,11 @@ const Navbar = () => {
       right: -6px;
     }
   `;
+
+  // 尚未確認狀態前，避免按鈕閃爍
+  if (!authChecked) {
+    return null;
+  }
 
   return (
     <AppBar position='sticky' color='secondary' elevation={0}>
@@ -78,14 +90,17 @@ const Navbar = () => {
             >
               搜尋
             </Button>
+
             <IconButton>
               <ShoppingCartIcon fontSize='small' />
               <CartBadge badgeContent={10} color='primary' overlap='circular' />
             </IconButton>
+
             <IconButton>
               <FavoriteBorderIcon fontSize='small' />
               <CartBadge badgeContent={10} color='primary' overlap='circular' />
             </IconButton>
+
             <Button
               component={RouterLink}
               to='/favorites'
@@ -94,6 +109,7 @@ const Navbar = () => {
             >
               收藏
             </Button>
+
             <Button
               component={RouterLink}
               to='/profile'
@@ -102,6 +118,7 @@ const Navbar = () => {
             >
               會員資料
             </Button>
+
             {isLoggedIn ? (
               <Button
                 startIcon={<LogoutIcon />}
@@ -114,18 +131,19 @@ const Navbar = () => {
               <Button
                 startIcon={<LoginIcon />}
                 color='primary'
-                onClick={() => setLoginOpen(true)}
+                onClick={() => (window.location.href = GOOGLE_LOGIN_URL)}
               >
                 登入
               </Button>
             )}
-            {/* 登入 Dialog */}
-            <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
+
             <LogoutSuccessDialog
               open={logoutDialogOpen}
               onClose={() => {
                 setLogoutDialogOpen(false);
+                // 回首頁或刷新，二選一
                 window.location.href = import.meta.env.BASE_URL;
+                // 或者：window.location.reload();
               }}
             />
           </Box>
