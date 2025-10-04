@@ -2,6 +2,9 @@ import { Box, Container, Typography, Grid } from '@mui/material';
 import SearchBar from '../components/SearchBar';
 import RentCard from '../components/RentCard';
 import { Helmet } from 'react-helmet-async';
+import { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import api from '../utils/axiosInstance';
 
 const featuredProperties = [
   {
@@ -47,10 +50,34 @@ const featuredProperties = [
 ];
 
 const Home = () => {
-  const siteName = 'Viberent'; // 或者 "Hello World 租房網" - 選擇一個主要的品牌名稱
+  const siteName = 'Viberent';
   const siteDescription = `在 ${siteName} 找到你的理想住所。探索全台優質租屋選擇，${siteName} 提供溫馨小套房、明亮兩房、精緻三房等，輕鬆找到適合你的家。`;
   const keywords =
-    'Viberent, Hello World 租房網, 租房, 租屋, 套房, 公寓, 台北租屋, 新北租屋'; // 相關關鍵字
+    'Viberent, Hello World 租房網, 租房, 租屋, 套房, 公寓, 台北租屋, 新北租屋';
+
+  // 👉 新增：一次性導頁（只在有 ?next= 時檢查）
+  const nav = useNavigate();
+  const { search } = useLocation();
+  useEffect(() => {
+    const params = new URLSearchParams(search);
+    const next = params.get('next'); // 例如 "/profile"
+    if (!next) return;
+
+    (async () => {
+      try {
+        // 用 session 判斷是否已登入（需 withCredentials: true）
+        await api.get('/api/user/me', { withCredentials: true });
+        // 清掉 ?next，避免回首頁時又再跳
+        const url = new URL(window.location.href);
+        url.searchParams.delete('next');
+        window.history.replaceState({}, '', url.toString());
+        // 前往 next
+        nav(next, { replace: true });
+      } catch {
+        // 未登入就留在首頁，不導
+      }
+    })();
+  }, [search, nav]);
 
   return (
     <>
@@ -59,7 +86,6 @@ const Home = () => {
         <title>{`${siteName} - 找到你的理想住所 | 全台優質租屋網`}</title>
         <meta name='description' content={siteDescription} />
         <meta name='keywords' content={keywords} />
-        {/* Open Graph / Facebook */}
         <meta property='og:type' content='website' />
         <meta
           property='og:url'
@@ -70,9 +96,7 @@ const Home = () => {
         <meta
           property='og:image'
           content='https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=600'
-        />{' '}
-        {/* 放一個代表你網站的圖片 */}
-        {/* Twitter */}
+        />
         <meta property='twitter:card' content='summary_large_image' />
         <meta
           property='twitter:url'
@@ -86,23 +110,13 @@ const Home = () => {
         <meta
           property='twitter:image'
           content='https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=600'
-        />{' '}
-        {/* 放一個代表你網站的圖片 */}
-        {/* 設定標準網址 (Canonical URL) */}
-        <link
-          rel='canonical'
-          href='https://taguo1109.github.io/renthouse/'
         />
+        <link rel='canonical' href='https://taguo1109.github.io/renthouse/' />
       </Helmet>
+
       <Box>
         {/* Hero Section */}
-        <Box
-          sx={{
-            bgcolor: 'secondary.main',
-            pt: 8,
-            pb: 6,
-          }}
-        >
+        <Box sx={{ bgcolor: 'secondary.main', pt: 8, pb: 6 }}>
           <Container maxWidth='lg'>
             <Typography
               component='h1'
@@ -134,19 +148,13 @@ const Home = () => {
             container
             spacing={4}
             justifyContent='center'
-            sx={{
-              maxWidth: '1200px',
-              margin: '0 auto',
-            }}
+            sx={{ maxWidth: '1200px', margin: '0 auto' }}
           >
             {featuredProperties.map((property) => (
               <Grid
                 key={property.id}
                 size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}
+                sx={{ display: 'flex', justifyContent: 'center' }}
               >
                 <RentCard
                   title={property.title}
