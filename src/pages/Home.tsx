@@ -80,7 +80,7 @@ const Home = () => {
         />
         <meta
           property='twitter:title'
-          content={`${siteName} - 找到你的理想住所`}
+          content={`${siteName} - 找到您的理想住所`}
         />
         <meta property='twitter:description' content={siteDescription} />
         <meta
