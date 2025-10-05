@@ -29,6 +29,7 @@ import LogoutSuccessDialog from './dialog/LogoutSuccessDialog';
 import api from '../utils/axiosInstance';
 import LoginDialog from './dialog/LoginDialog';
 import Badge, { badgeClasses } from '@mui/material/Badge';
+import { OAUTH_BASE } from '../config/auth';
 
 const Navbar = () => {
   const [loginOpen, setLoginOpen] = useState(false);
@@ -42,18 +43,32 @@ const Navbar = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   // 開頁用 session 檢查登入狀態
-  useEffect(() => {
-    (async () => {
-      try {
-        await api.get('/api/user/me', { withCredentials: true });
-        setIsLoggedIn(true);
-      } catch {
+useEffect(() => {
+  (async () => {
+    try {
+      const res = await fetch(`${OAUTH_BASE}/api/user/me`, {
+        credentials: 'include',
+        redirect: 'manual', // 遇到 302 不跟隨，回傳 type=opaqueredirect
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      // 被導到 OAuth（302）時，fetch 會回傳 opaqueredirect / status 0
+      if (res.type === 'opaqueredirect' || res.status === 0) {
         setIsLoggedIn(false);
-      } finally {
-        setAuthChecked(true);
+      } else if (res.ok) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
       }
-    })();
-  }, []);
+    } catch {
+      setIsLoggedIn(false);
+    } finally {
+      setAuthChecked(true);
+    }
+  })();
+}, []);
 
   const handleLogout = async () => {
     try {
