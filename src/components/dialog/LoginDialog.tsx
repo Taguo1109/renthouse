@@ -1,6 +1,11 @@
 // components/LoginDialog.tsx
 import {
-  Dialog, DialogTitle, DialogContent, DialogActions, Button, Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Box,
 } from '@mui/material';
 import { GOOGLE_LOGIN_URL } from '../../config/auth'; // 路徑依你的專案調整
 import GoogleIcon from '@mui/icons-material/Google';
@@ -16,7 +21,7 @@ const LoginDialog = ({ open, onClose }: LoginDialogProps) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth='xs' fullWidth>
       <DialogTitle sx={{ fontWeight: 'bold', color: 'primary.main' }}>
         使用 Google 登入
       </DialogTitle>
@@ -24,8 +29,8 @@ const LoginDialog = ({ open, onClose }: LoginDialogProps) => {
         <Box mt={1}>
           <Button
             fullWidth
-            variant="contained"
-            size="large"
+            variant='contained'
+            size='large'
             startIcon={<GoogleIcon />}
             onClick={handleGoogleLogin}
             sx={{ py: 1.2 }}
@@ -34,8 +39,21 @@ const LoginDialog = ({ open, onClose }: LoginDialogProps) => {
           </Button>
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="secondary">取消</Button>
+      <DialogActions sx={{ px: 3, pb: 2 }}>
+        <Button
+          onClick={onClose}
+          variant='contained'
+          sx={{
+            backgroundColor: '#E0E0E0',
+            color: '#000',
+            '&:hover': {
+              backgroundColor: '#D6D6D6',
+            },
+            py: 1.2, // 跟 Google 按鈕一樣高度
+          }}
+        >
+          取消
+        </Button>
       </DialogActions>
     </Dialog>
   );
