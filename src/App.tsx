@@ -6,7 +6,7 @@ import { theme } from './styles/theme';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
-import Profile from './components/Profile';
+import UserInfo from './components/UserInfo';
 
 function App() {
   return (
@@ -21,7 +21,7 @@ function App() {
             <Routes>
               <Route path='/' element={<Home />} />
               {/* 其他路由將在這裡添加 */}
-              <Route path='/profile' element={<Profile />} />
+              <Route path='/userInfo' element={<UserInfo />} />
             </Routes>
           </Box>
           <Footer />

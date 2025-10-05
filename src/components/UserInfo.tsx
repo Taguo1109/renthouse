@@ -14,7 +14,7 @@ import {
 import api from '../utils/axiosInstance';
 
 // 後端回傳的 DTO（對應 /api/user/me）
-interface UserProfileDto {
+interface UserInfoDto {
   userId: string; // UUID
   name: string | null;
   email: string | null;
@@ -29,19 +29,19 @@ interface JsonResult<T> {
   data: T;
 }
 
-const Profile = () => {
-  const [profile, setProfile] = useState<UserProfileDto | null>(null);
+const UserInfo = () => {
+  const [userInfo, setUserInfo] = useState<UserInfoDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchUserInfo = async () => {
       try {
         // 後端用 Session Cookie 判斷身分
-        const res = await api.get<JsonResult<UserProfileDto>>('/api/user/me', {
+        const res = await api.get<JsonResult<UserInfoDto>>('/api/user/me', {
           withCredentials: true,
         });
-        setProfile(res.data.data);
+        setUserInfo(res.data.data);
       } catch (err) {
         const e = err as AxiosError;
         if (e.response?.status === 401) {
@@ -54,7 +54,7 @@ const Profile = () => {
       }
     };
 
-    fetchProfile();
+    fetchUserInfo();
   }, []);
 
   if (loading) {
@@ -75,20 +75,20 @@ const Profile = () => {
     );
   }
 
-  if (!profile) return null;
+  if (!userInfo) return null;
 
   return (
     <Container maxWidth='sm'>
       <Paper elevation={3} sx={{ mt: 5, p: 4, borderRadius: 2 }}>
         <Stack direction='row' spacing={2} alignItems='center' mb={2}>
           <Avatar
-            src={profile.pictureUrl ?? undefined}
-            alt={profile.name ?? profile.email ?? 'user'}
+            src={userInfo.pictureUrl ?? undefined}
+            alt={userInfo.name ?? userInfo.email ?? 'user'}
             sx={{ width: 64, height: 64 }}
           />
           <Box>
             <Typography variant='h5' color='primary.main'>
-              {profile.name || '未提供名稱'}
+              {userInfo.name || '未提供名稱'}
             </Typography>
           </Box>
         </Stack>
@@ -97,23 +97,23 @@ const Profile = () => {
 
         <Typography variant='body1' sx={{ mb: 1 }}>
           <strong>Email：</strong>
-          {profile.email || '—'}
+          {userInfo.email || '—'}
         </Typography>
         <Typography variant='body1' sx={{ mb: 1 }}>
           <strong>使用者 ID：</strong>
-          {profile.userId}
+          {userInfo.userId}
         </Typography>
         <Typography variant='body1' sx={{ mb: 1 }}>
           <strong>語系：</strong>
-          {profile.locale || '—'}
+          {userInfo.locale || '—'}
         </Typography>
         <Typography variant='body1' sx={{ mb: 1 }}>
           <strong>角色：</strong>
-          {profile.role || '—'}
+          {userInfo.role || '—'}
         </Typography>
       </Paper>
     </Container>
   );
 };
 
-export default Profile;
+export default UserInfo;

@@ -113,7 +113,7 @@ const Navbar = () => {
 
             <Button
               component={RouterLink}
-              to='/profile'
+              to='/userInfo'
               startIcon={<PersonOutlineIcon />}
               color='primary'
             >
